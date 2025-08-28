@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KELLY MAINTENANCE - Solutions sur mesure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1513828583688-c52646db42da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .service-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-left-color: #3b82f6;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            color: black;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .map-container {
+            overflow: hidden;
+            padding-bottom: 56.25%;
+            position: relative;
+            height: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .map-container iframe {
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            border: none;
+        }
+        
+        #contact {
+            display: none;
+        }
+        
+        #contact.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .floating-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-button:hover {
+            transform: scale(1.1);
+            background-color: #2563eb;
+        }
+        
+        .floating-button i {
+            font-size: 24px;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stats-item {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 8px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 99;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: #2563eb;
+        }
+        
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: transparent;
+            z-index: 1000;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #3b82f6;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800 scroll-smooth">
+    <!-- Progress bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <!-- Floating contact button -->
+    <div class="floating-button" id="floatingContactBtn">
+        <i class="fas fa-headset"></i>
+    </div>
+    
+    <!-- Back to top button -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <!-- Logo image: place the provided logo at assets/logo.png
+                             Optionally add a high-DPI version at assets/logo@2x.png -->
+                        <picture>
+                            <source srcset="assets/logo@2x.png 2x">
+                            <img src="assets/logo.png" alt="KELLY MAINTENANCE" class="h-12 mr-3">
+                        </picture>
+                        <span class="text-xl font-bold text-blue-600 hidden sm:inline">KELLY MAINTENANCE</span>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="/" class="text-blue-600 font-medium px-3 py-2 text-sm hover:text-blue-800 transition-colors duration-200">Accueil</a>
+                    <a href="#services" class="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm transition-colors duration-200">Services</a>
+                    <a href="#avantages" class="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm transition-colors duration-200">Avantages</a>
+                    <a href="#contact" data-open-contact="true" class="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm transition-colors duration-200">Contact</a>
+                    <a href="#contact" data-open-contact="true" class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        Devis gratuit
+                    </a>
+                </div>
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors duration-200">
+                        <span class="sr-only">Ouvrir menu principal</span>
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="/" class="block pl-3 pr-4 py-2 border-l-4 border-blue-500 text-base font-medium text-blue-700 bg-blue-50">Accueil</a>
+                <a href="#services" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200">Services</a>
+                <a href="#avantages" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200">Avantages</a>
+                <a href="#contact" data-open-contact="true" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200">Contact</a>
+                <a href="#contact" data-open-contact="true" class="block w-full text-center ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">Devis gratuit</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero text-white py-20 md:py-32 flex items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="md:w-2/3 lg:w-1/2">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 animate-fadeIn">Maintenance industrielle fiable pour maximiser votre productivité</h1>
+                <p class="text-xl md:text-2xl mb-8 animate-fadeIn delay-100">Des solutions sur mesure pour garantir la performance et la sécurité de vos équipements</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 animate-fadeIn delay-200">
+                    <a href="#contact" data-open-contact="true" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10 transition-colors duration-200">
+                        <i class="fas fa-file-signature mr-2"></i> Demandez un devis gratuit
+                    </a>
+                    <a href="#services" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 bg-opacity-60 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10 transition-colors duration-200">
+                        <i class="fas fa-tools mr-2"></i> Nos services
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section statistiques supprimée -->
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">Nos services de maintenance industrielle</h2>
+                <p class="mt-4 max-w-2xl text-xl text-gray-600 mx-auto">Des solutions complètes adaptées à vos besoins spécifiques</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Service 1 -->
+                <div class="service-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600 mb-4">
+                            <i class="fas fa-shield-alt text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Maintenance préventive</h3>
+                        <p class="text-gray-600">Programmes personnalisés pour anticiper les pannes et prolonger la durée de vie de vos équipements.</p>
+                        <button class="mt-4 text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center">
+                            En savoir plus <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="service-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600 mb-4">
+                            <i class="fas fa-tools text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Maintenance corrective</h3>
+                        <p class="text-gray-600">Interventions rapides et efficaces pour réparer vos équipements et minimiser les temps d'arrêt.</p>
+                        <button class="mt-4 text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center">
+                            En savoir plus <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="service-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600 mb-4">
+                            <i class="fas fa-clipboard-list text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Gestion des équipements</h3>
+                        <p class="text-gray-600">Suivi complet de votre parc machines avec historique des interventions et planification optimisée.</p>
+                        <button class="mt-4 text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center">
+                            En savoir plus <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Service 4 -->
+                <div class="service-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600 mb-4">
+                            <i class="fas fa-clock text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Intervention d'urgence 24/7</h3>
+                        <p class="text-gray-600">Disponibilité permanente pour répondre à vos urgences et rétablir rapidement votre production.</p>
+                        <button class="mt-4 text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center">
+                            En savoir plus <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Avantages Section -->
+    <section id="avantages" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">Pourquoi choisir notre expertise ?</h2>
+                <p class="mt-4 max-w-2xl text-xl text-gray-600 mx-auto">Notre engagement pour votre performance industrielle</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <div class="flex items-start mb-8">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
+                                <i class="fas fa-user-tie text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Équipe certifiée et expérimentée</h3>
+                            <p class="mt-2 text-gray-600">Nos techniciens possèdent les certifications les plus exigeantes du secteur et une expérience terrain solide.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start mb-8">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
+                                <i class="fas fa-bolt text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Réactivité et disponibilité</h3>
+                            <p class="mt-2 text-gray-600">Engagement de réponse sous 2h pour les urgences et délais d'intervention parmi les plus rapides du secteur.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex items-start mb-8">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
+                                <i class="fas fa-microchip text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Technologies avancées</h3>
+                            <p class="mt-2 text-gray-600">Outils de diagnostic dernier cri et solutions innovantes pour une maintenance prédictive efficace.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start mb-8">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
+                                <i class="fas fa-hard-hat text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Respect des normes de sécurité</h3>
+                            <p class="mt-2 text-gray-600">Conformité totale avec les réglementations en vigueur et procédures strictes pour la sécurité de tous.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 p-8 bg-blue-600 text-white">
+                        <h3 class="text-2xl font-bold mb-4">Notre processus en 4 étapes</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 bg-blue-700 rounded-full h-8 w-8 flex items-center justify-center mr-4">1</div>
+                                <div>
+                                    <h4 class="font-semibold">Analyse des besoins</h4>
+                                    <p class="text-blue-100">Évaluation complète de vos équipements et processus</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 bg-blue-700 rounded-full h-8 w-8 flex items-center justify-center mr-4">2</div>
+                                <div>
+                                    <h4 class="font-semibold">Proposition sur mesure</h4>
+                                    <p class="text-blue-100">Plan de maintenance adapté à vos spécificités</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 bg-blue-700 rounded-full h-8 w-8 flex items-center justify-center mr-4">3</div>
+                                <div>
+                                    <h4 class="font-semibold">Mise en œuvre</h4>
+                                    <p class="text-blue-100">Déploiement par nos équipes certifiées</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 bg-blue-700 rounded-full h-8 w-8 flex items-center justify-center mr-4">4</div>
+                                <div>
+                                    <h4 class="font-semibold">Suivi et amélioration</h4>
+                                    <p class="text-blue-100">Optimisation continue des performances</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 p-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Demandez une consultation gratuite</h3>
+                        <p class="text-gray-600 mb-6">Nos experts analyseront vos besoins et vous proposeront la solution la plus adaptée à votre situation.</p>
+                        <a href="#contact" data-open-contact="true" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                            <i class="fas fa-calendar-check mr-2"></i> Prendre rendez-vous
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-blue-700 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-extrabold mb-6">Contactez-nous dès aujourd'hui pour une consultation personnalisée</h2>
+            <p class="text-xl mb-8">Notre équipe est à votre disposition pour répondre à toutes vos questions et élaborer une solution adaptée à vos besoins.</p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="tel:+2296060889072" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-gray-100 md:py-4 md:text-lg md:px-10 transition-colors duration-200">
+                    <i class="fas fa-phone-alt mr-2"></i> Appelez-nous
+                </a>
+                <a href="#contact" data-open-contact="true" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-800 hover:bg-blue-900 md:py-4 md:text-lg md:px-10 transition-colors duration-200">
+                    <i class="fas fa-envelope mr-2"></i> Envoyez un message
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8">
+                <div class="mb-8 lg:mb-0">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Prenez contact avec nous</h2>
+                    <p class="text-lg text-gray-600 mb-8">Remplissez le formulaire et nous vous recontacterons dans les plus brefs délais.</p>
+                    
+                    <form class="space-y-6" action="https://formspree.io/f/xbjndqyv" method="POST">
+                        <input type="hidden" name="_subject" value="Nouvelle demande de contact - Kelly Maintenance">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Nom complet</label>
+                            <input type="text" id="name" name="name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="email" name="email" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Téléphone</label>
+                            <input type="tel" id="phone" name="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        </div>
+                        
+                        <div>
+                            <label for="service" class="block text-sm font-medium text-gray-700">Service concerné</label>
+                            <select id="service" name="service" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                                <option value="">Sélectionnez un service</option>
+                                <option value="Maintenance préventive">Maintenance préventive</option>
+                                <option value="Maintenance corrective">Maintenance corrective</option>
+                                <option value="Gestion des équipements">Gestion des équipements</option>
+                                <option value="Intervention d'urgence">Intervention d'urgence</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                            <textarea id="message" name="message" rows="4" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"></textarea>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                <i class="fas fa-paper-plane mr-2"></i> Envoyer ma demande
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="lg:pl-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Nos coordonnées</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-lg text-gray-900 font-medium">Adresse</p>
+                                <p class="text-gray-600">Cotonou, Bénin</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-phone-alt text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-lg text-gray-900 font-medium">Téléphone</p>
+                                <p class="text-gray-600">01 60 88 90 72<br>Urgence 24/7: 01 06 60 88 90 72</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-envelope text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-lg text-gray-900 font-medium">Email</p>
+                                <p class="text-gray-600">kellymarlone2002@gmail.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-clock text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-lg text-gray-900 font-medium">Horaires</p>
+                                <p class="text-gray-600">Lundi-Vendredi: 8h-19h<br>Urgences: 24h/24 7j/7</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Réseaux sociaux et localisation Google supprimés intentionnellement -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section FAQ supprimée -->
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <!-- Footer logo: reuse the same assets/logo.png and optional assets/logo@2x.png -->
+                    <picture>
+                        <source srcset="assets/logo@2x.png 2x">
+                        <img src="assets/logo.png" alt="KELLY MAINTENANCE" class="h-12 mb-3">
+                    </picture>
+                    <h3 class="text-lg font-semibold mb-4">KELLY MAINTENANCE</h3>
+                    <p class="text-gray-400">Experts en maintenance industrielle. Nous garantissons la performance et la sécurité de vos équipements.</p>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Accueil</a></li>
+                        <li><a href="#services" class="text-gray-400 hover:text-white transition-colors duration-200">Services</a></li>
+                        <li><a href="#avantages" class="text-gray-400 hover:text-white transition-colors duration-200">Avantages</a></li>
+                        <li><a href="#contact" data-open-contact="true" class="text-gray-400 hover:text-white transition-colors duration-200">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Légal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Mentions légales</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Politique de confidentialité</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">CGV</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Cookies</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <p class="text-gray-400 mb-4">Abonnez-vous pour recevoir nos actualités et conseils.</p>
+                    <form class="flex" id="newsletter-form">
+                        <input type="email" id="newsletter-email" placeholder="Votre email" class="px-4 py-2 w-full rounded-l-md focus:outline-none text-gray-900" required>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-md transition-colors duration-200">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    <p class="text-xs text-gray-500 mt-2">En vous abonnant, vous acceptez notre politique de confidentialité.</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">© 2023 KellyMaintenance. Tous droits réservés.</p>
+                <div class="mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm mr-4 transition-colors duration-200">Plan du site</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors duration-200">Accessibilité</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle" class="text-2xl font-bold mb-4"></h2>
+            <div id="modalContent" class="text-gray-700"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Fonction pour afficher la section contact
+        function showContactSection() {
+            const contactSection = document.getElementById('contact');
+            if (!contactSection) return;
+            contactSection.classList.add('show');
+            setTimeout(() => {
+                contactSection.scrollIntoView({ behavior: 'smooth' });
+            }, 50);
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (!targetId || targetId === '#') return;
+
+                const mobileMenu = document.getElementById('mobile-menu');
+
+                // If link points to contact, only show contact when data-open-contact is present
+                if (targetId === '#contact') {
+                    if (this.hasAttribute('data-open-contact')) {
+                        e.preventDefault();
+                        showContactSection();
+                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    } else {
+                        // If no attribute, prevent default scroll to keep section hidden
+                        e.preventDefault();
+                    }
+                    return;
+                }
+
+                e.preventDefault();
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Contact form submission
+        const contactForm = document.querySelector('#contact form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Ensure contact section is visible when submitting
+                showContactSection();
+
+                const formData = new FormData(contactForm);
+
+                try {
+                    const response = await fetch(contactForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Merci pour votre message. Nous vous contacterons rapidement.');
+                        contactForm.reset();
+                    } else {
+                        throw new Error('Erreur lors de l\'envoi du formulaire');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Une erreur est survenue. Veuillez réessayer ou nous contacter directement par téléphone.');
+                }
+            });
+        }
+
+        // Newsletter form submission
+        const newsletterForm = document.getElementById('newsletter-form');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('newsletter-email').value;
+                alert(`Merci pour votre inscription avec l'email: ${email}`);
+                newsletterForm.reset();
+            });
+        }
+
+        // Floating contact button
+        const floatingContactBtn = document.getElementById('floatingContactBtn');
+        if (floatingContactBtn) {
+            floatingContactBtn.addEventListener('click', function() {
+                showContactSection();
+            });
+        }
+
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        if (backToTop) {
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Progress bar
+        const progressBar = document.getElementById('progressBar');
+        if (progressBar) {
+            window.addEventListener('scroll', function() {
+                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPercentage = (scrollTop / scrollHeight) * 100;
+                progressBar.style.width = scrollPercentage + '%';
+            });
+        }
+
+        // FAQ functionality
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // Toggle answer visibility
+                answer.classList.toggle('hidden');
+                
+                // Rotate icon
+                if (answer.classList.contains('hidden')) {
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        // Service modal functionality
+        const serviceCards = document.querySelectorAll('.service-card button');
+        const modal = document.getElementById('serviceModal');
+        const closeBtn = document.querySelector('.close');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+
+        // Service details
+        const serviceDetails = {
+            "Maintenance préventive": {
+                title: "Maintenance Préventive",
+                content: "<p>Nos programmes de maintenance préventive sont conçus pour anticiper les pannes et prolonger la durée de vie de vos équipements. Nous établissons un calendrier personnalisé basé sur :</p><ul class='list-disc pl-5 mt-2 space-y-1'><li>L'analyse des conditions d'utilisation</li><li>Les recommandations des fabricants</li><li>L'historique de vos équipements</li><li>Les contraintes de production</li></ul><p class='mt-4'>Nos techniciens effectuent des vérifications systématiques, des nettoyages, des graissages et des remplacements préventifs pour maintenir vos machines en parfait état de fonctionnement.</p>"
+            },
+            "Maintenance corrective": {
+                title: "Maintenance Corrective",
+                content: "<p>Lorsqu'une panne survient, notre équipe intervient rapidement pour diagnostiquer et réparer vos équipements. Notre processus :</p><ol class='list-decimal pl-5 mt-2 space-y-1'><li>Diagnostic précis de la panne</li><li>Proposition de solution avec estimation des coûts</li><li>Réparation avec des pièces de qualité</li><li>Tests de fonctionnement</li><li>Rapport d'intervention détaillé</li></ol><p class='mt-4'>Nous disposons d'un stock important de pièces détachées pour les marques les plus courantes, ce qui nous permet de réduire les délais d'immobilisation.</p>"
+            },
+            "Gestion des équipements": {
+                title: "Gestion des Équipements",
+                content: "<p>Nous proposons une solution complète de gestion de votre parc machines comprenant :</p><div class='grid grid-cols-2 gap-4 mt-4'><div><h4 class='font-bold'>Suivi technique</h4><ul class='list-disc pl-5 mt-1 space-y-1 text-sm'><li>Historique des interventions</li><li>Consommation de pièces</li><li>Coûts de maintenance</li></ul></div><div><h4 class='font-bold'>Planification</h4><ul class='list-disc pl-5 mt-1 space-y-1 text-sm'><li>Calendrier des maintenances</li><li>Alertes pour les échéances</li><li>Optimisation des arrêts</li></ul></div></div><p class='mt-4'>Notre système vous donne une visibilité complète sur l'état de vos équipements et vous aide à prendre les meilleures décisions.</p>"
+            },
+            "Intervention d'urgence 24/7": {
+                title: "Intervention d'Urgence 24/7",
+                content: "<p>Notre service d'urgence est disponible 24h/24 et 7j/7 pour répondre à vos besoins critiques. Fonctionnalités :</p><div class='bg-blue-50 p-4 rounded-md mt-4'><div class='flex items-start mb-2'><div class='flex-shrink-0 text-blue-600 mr-2'><i class='fas fa-phone'></i></div><div><h4 class='font-bold'>Ligne dédiée</h4><p class='text-sm'>Numéro spécial pour les urgences avec réponse immédiate</p></div></div><div class='flex items-start mb-2'><div class='flex-shrink-0 text-blue-600 mr-2'><i class='fas fa-clock'></i></div><div><h4 class='font-bold'>Délai garanti</h4><p class='text-sm'>Intervention sur site en moins de 2 heures</p></div></div><div class='flex items-start'><div class='flex-shrink-0 text-blue-600 mr-2'><i class='fas fa-tools'></i></div><div><h4 class='font-bold'>Équipement complet</h4><p class='text-sm'>Véhicules équipés pour la plupart des réparations urgentes</p></div></div></div><p class='mt-4'>Nos techniciens d'astreinte sont formés pour gérer les situations les plus critiques et rétablir votre production dans les meilleurs délais.</p>"
+            }
+        };
+
+        serviceCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const serviceTitle = this.parentElement.querySelector('h3').textContent;
+                const service = serviceDetails[serviceTitle];
+                
+                if (service) {
+                    modalTitle.textContent = service.title;
+                    modalContent.innerHTML = service.content;
+                    modal.style.display = "block";
+                    document.body.style.overflow = "hidden";
+                }
+            });
+        });
+
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        });
+
+        // Animation on scroll
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.animate-fadeIn');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.2;
+                
+                if (elementPosition < screenPosition) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        }
+
+        // Set initial state for animated elements
+        document.querySelectorAll('.animate-fadeIn').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        });
+
+        // Delay classes for sequential animation
+        document.querySelectorAll('.delay-100').forEach(el => {
+            el.style.transitionDelay = '0.1s';
+        });
+        
+        document.querySelectorAll('.delay-200').forEach(el => {
+            el.style.transitionDelay = '0.2s';
+        });
+
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+    </script>
+</body>
+</html>
